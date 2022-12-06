@@ -2,16 +2,16 @@ import { Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Footer from "./footer";
-import Header from "./header";
-import Home from "./pages/home";
-import Login from "./pages/login";
-import Profile from "./pages/profile";
-import ReviewAdd from "./pages/reviewAdd";
-import ReviewDetail from "./pages/reviewDetail";
-import ReviewEdit from "./pages/reviewEdit";
-import SignUp from "./pages/signup";
-import { themeOptions } from "./themeOptions";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import ReviewAdd from "./pages/ReviewAdd";
+import ReviewDetail from "./pages/ReviewDetail";
+import ReviewEdit from "./pages/ReviewEdit";
+import SignUp from "./pages/SignUp";
+import { themeOptions } from "./components/themeOptions";
 
 const App = () => {
   const theme = createTheme(themeOptions);
