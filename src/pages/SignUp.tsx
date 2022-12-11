@@ -10,19 +10,36 @@ import {
   Typography,
   Link as MUILink,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import title from "../image/title.png";
+import axios from "axios";
+import { useCookies } from "react-cookie";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const [, setErrorMessage] = React.useState<string>();
+  const [, setCookie] = useCookies();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get("lastName") + " " + data.get("firstName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      name: formData.get("lastName") + " " + formData.get("firstName"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/users`, data)
+      .then((res) => {
+        const token: string = res.data.token;
+        setCookie("token", token);
+        navigate("/");
+      })
+      .catch((err) => {
+        setErrorMessage(`ユーザー作成に失敗しました。 ${err}`);
+      });
   };
 
   return (
