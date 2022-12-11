@@ -55,6 +55,7 @@ const SignUp = () => {
           backgroundRepeat: "no-repeat",
           backgroundSize: "contained",
           backgroundPosition: "center",
+          "z-index": "-1",
         }}
       />
       <Grid item xs={12} sm={8} md={5}>
