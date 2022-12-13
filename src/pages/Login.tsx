@@ -7,17 +7,23 @@ import {
   Box,
   Typography,
   Link as MUILink,
+  Collapse,
+  Alert,
+  IconButton,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import title from "../image/title.png";
 import axios from "axios";
 import { useCookies } from "react-cookie";
+import Footer from "../components/Footer";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [, setErrorMessage] = React.useState<string>();
+  const [errorMessage, setErrorMessage] = React.useState<string>();
   const [, setCookie] = useCookies();
+  const [errorOpen, setErrorOpen] = React.useState<boolean>(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,6 +42,7 @@ const Login = () => {
       })
       .catch((err) => {
         setErrorMessage(`ログインに失敗しました。 ${err}`);
+        setErrorOpen(true);
       });
   };
 
@@ -124,6 +131,35 @@ const Login = () => {
           </Box>
         </Box>
       </Grid>
+      <Grid item xs={false} sm={false} md={2} />
+
+      <Grid item xs={1} sm={1} md={2} />
+      <Grid item xs={10} sm={10} md={8}>
+        <Box sx={{ width: "100%" }}>
+          <Collapse in={errorOpen}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setErrorOpen(false);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              {errorMessage}
+            </Alert>
+          </Collapse>
+        </Box>
+      </Grid>
+      <Grid item xs={1} sm={1} md={2} />
+      <Footer />
     </Grid>
   );
 };
