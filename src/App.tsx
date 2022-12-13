@@ -2,7 +2,6 @@ import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -29,7 +28,6 @@ const App = () => {
           <Route path={`/detail/:id`} element={<ReviewDetail />} />
           <Route path={`/edit/:id`} element={<ReviewEdit />} />
         </Routes>
-        <Footer />
       </BrowserRouter>
     </ThemeProvider>
   );
