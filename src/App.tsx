@@ -11,6 +11,7 @@ import ReviewDetail from "./pages/ReviewDetail";
 import ReviewEdit from "./pages/ReviewEdit";
 import SignUp from "./pages/SignUp";
 import { themeOptions } from "./components/themeOptions";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const theme = createTheme(themeOptions);
@@ -27,6 +28,7 @@ const App = () => {
           <Route path={`/new`} element={<ReviewAdd />} />
           <Route path={`/detail/:id`} element={<ReviewDetail />} />
           <Route path={`/edit/:id`} element={<ReviewEdit />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
