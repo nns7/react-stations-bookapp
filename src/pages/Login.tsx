@@ -16,11 +16,14 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import title from "../image/title.png";
 import axios from "axios";
+import { useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
+import { signIn } from "../components/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = React.useState<string>();
   const [, setCookie] = useCookies();
   const [errorOpen, setErrorOpen] = React.useState<boolean>(false);
@@ -37,6 +40,7 @@ const Login = () => {
       .post(`${process.env.REACT_APP_API_URL}/signin`, data)
       .then((res) => {
         const token: string = res.data.token;
+        dispatch(signIn());
         setCookie("token", token);
         navigate("/");
       })

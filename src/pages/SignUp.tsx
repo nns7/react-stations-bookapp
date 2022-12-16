@@ -20,9 +20,12 @@ import title from "../image/title.png";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
+import { useDispatch } from "react-redux";
+import { signIn } from "../components/authSlice";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = React.useState<string>();
   const [, setCookie] = useCookies();
   const [errorOpen, setErrorOpen] = React.useState<boolean>(false);
@@ -40,6 +43,7 @@ const SignUp = () => {
       .post(`${process.env.REACT_APP_API_URL}/users`, data)
       .then((res) => {
         const token: string = res.data.token;
+        dispatch(signIn());
         setCookie("token", token);
         navigate("/");
       })
