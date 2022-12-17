@@ -97,6 +97,7 @@ const Login = () => {
                   label="メールアドレス"
                   name="email"
                   autoComplete="email"
+                  autoFocus
                 />
               </Grid>
               <Grid item xs={12}>
