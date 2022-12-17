@@ -48,6 +48,10 @@ const Header = () => {
     navigate("/login");
   }
 
+  function onReviewAdd() {
+    navigate("/new");
+  }
+
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -91,6 +95,14 @@ const Header = () => {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
+              <MenuItem
+                onClick={() => {
+                  onReviewAdd();
+                  handleClose();
+                }}
+              >
+                レビュー投稿
+              </MenuItem>
               <MenuItem
                 onClick={() => {
                   onProfile();
