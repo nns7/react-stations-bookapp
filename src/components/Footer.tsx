@@ -7,7 +7,7 @@ const Footer = () => {
       variant="body2"
       color="text.secondary"
       align="center"
-      sx={{ flexGrow: 1 }}
+      sx={{ flexGrow: 1, pt: 2 }}
     >
       Copyright © bookmail.com All Rights Reserved.
     </Typography>
