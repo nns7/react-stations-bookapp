@@ -17,12 +17,14 @@ import { Link } from "react-router-dom";
 import { Book } from "../common/book.type";
 import { RootState } from "../common/rootState.type";
 import Footer from "../components/Footer";
+import Pagination from "../components/Pagination";
 
 const Home = () => {
   const auth = useSelector((state: RootState) => state.auth.isSignIn);
   const [books, setBooks] = React.useState<[] | Book[]>([]);
   const [, setErrorMessage] = React.useState("");
   const [cookies] = useCookies();
+  const offset = useSelector((state: RootState) => state.offset.offset);
 
   React.useEffect(() => {
     const url = auth
@@ -33,7 +35,7 @@ const Home = () => {
         authorization: `Bearer ${cookies.token}`,
       },
       params: {
-        offset: 0,
+        offset: offset,
       },
     };
 
@@ -45,7 +47,7 @@ const Home = () => {
       .catch((err) => {
         setErrorMessage(`書籍一覧の取得に失敗しました。 ${err}`);
       });
-  }, []);
+  }, [offset]);
 
   return (
     <Grid container component="main" maxWidth="xs">
@@ -148,6 +150,8 @@ const Home = () => {
           </Grid>
         ))}
       </Grid>
+
+      <Pagination booksLength={books.length} />
 
       <Footer />
     </Grid>
