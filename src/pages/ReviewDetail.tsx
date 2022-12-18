@@ -38,7 +38,8 @@ const ReviewDetail = () => {
         setBook(res.data);
       })
       .catch((err) => {
-        setErrorMessage(`書籍一覧の取得に失敗しました。 ${err}`);
+        setErrorMessage(`書籍情報の取得に失敗しました。 ${err}`);
+        setErrorOpen(true);
       });
   }, []);
 

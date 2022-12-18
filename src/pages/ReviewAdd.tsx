@@ -44,7 +44,7 @@ const ReviewAdd = () => {
         navigate("/");
       })
       .catch((err) => {
-        setErrorMessage(`ユーザー作成に失敗しました。 ${err}`);
+        setErrorMessage(`書籍レビューの投稿に失敗しました。 ${err}`);
         setErrorOpen(true);
       });
   };
