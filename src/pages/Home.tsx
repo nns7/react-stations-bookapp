@@ -50,6 +50,26 @@ const Home = () => {
       });
   }, [offset]);
 
+  function onDetail(id: string) {
+    const options = {
+      headers: {
+        authorization: `Bearer ${cookies.token}`,
+      },
+    };
+    const data = {
+      selectBookId: id,
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/logs`, data, options)
+      .then(() => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(`書籍IDの送信に失敗しました。 ${err}`);
+      });
+  }
+
   return (
     <Grid container component="main" maxWidth="xs">
       {auth ? (
@@ -131,6 +151,9 @@ const Home = () => {
                       size="small"
                       component={Link}
                       to={"/detail/" + book.id}
+                      onClick={() => {
+                        onDetail(book.id);
+                      }}
                     >
                       詳細
                     </Button>
