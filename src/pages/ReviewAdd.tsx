@@ -51,8 +51,8 @@ const ReviewAdd = () => {
 
   return (
     <Grid container component="main" maxWidth="xs">
-      <Grid item xs={1} sm={1} md={2} />
-      <Grid item xs={10} sm={10} md={8}>
+      <Grid item xs={false} sm={1} md={2} />
+      <Grid item xs={12} sm={10} md={8}>
         <Box
           sx={{
             marginTop: 8,
@@ -127,33 +127,27 @@ const ReviewAdd = () => {
             >
               投稿
             </Button>
+            <Collapse in={errorOpen}>
+              <Alert
+                severity="error"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setErrorOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+                sx={{ mb: 2 }}
+              >
+                {errorMessage}
+              </Alert>
+            </Collapse>
           </Box>
-        </Box>
-      </Grid>
-
-      <Grid item xs={1} sm={1} md={2} />
-      <Grid item xs={10} sm={10} md={8}>
-        <Box sx={{ width: "100%" }}>
-          <Collapse in={errorOpen}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setErrorOpen(false);
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-              sx={{ mb: 2 }}
-            >
-              {errorMessage}
-            </Alert>
-          </Collapse>
         </Box>
       </Grid>
 
