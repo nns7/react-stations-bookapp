@@ -13,6 +13,7 @@ import axios from "axios";
 import * as React from "react";
 import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { Book } from "../common/book.type";
 import { RootState } from "../common/rootState.type";
 import Footer from "../components/Footer";
@@ -95,11 +96,13 @@ const Home = () => {
         spacing={4}
         sx={{
           mt: 1,
+          mx: 2,
         }}
       >
         {books.map((book: Book) => (
           <Grid item key={book.id} xs={12} sm={6} md={3}>
             <Card
+              variant="outlined"
               sx={{ height: "100%", display: "flex", flexDirection: "column" }}
             >
               <CardContent sx={{ flexGrow: 1 }}>
@@ -115,9 +118,27 @@ const Home = () => {
                 <Typography align="right" variant="body2">
                   投稿者:{book.reviewer}
                 </Typography>
-                {book.isMine === true ? (
+
+                {auth ? (
                   <CardActions>
-                    <Button size="small">編集</Button>
+                    <Button
+                      size="small"
+                      component={Link}
+                      to={"/detail/" + book.id}
+                    >
+                      詳細
+                    </Button>
+                    {book.isMine === true ? (
+                      <Button
+                        size="small"
+                        component={Link}
+                        to={"/edit/" + book.id}
+                      >
+                        編集
+                      </Button>
+                    ) : (
+                      <></>
+                    )}
                   </CardActions>
                 ) : (
                   <></>
