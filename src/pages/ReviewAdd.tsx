@@ -124,6 +124,7 @@ const ReviewAdd = () => {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              color="warning"
             >
               投稿
             </Button>
