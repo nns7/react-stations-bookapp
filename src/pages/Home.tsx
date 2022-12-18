@@ -8,6 +8,7 @@ import {
   Divider,
   Grid,
   Typography,
+  Link as MUILink,
 } from "@mui/material";
 import axios from "axios";
 import * as React from "react";
@@ -55,8 +56,8 @@ const Home = () => {
         <></>
       ) : (
         <>
-          <Grid item xs={1} sm={1} md={2} />
-          <Grid item xs={10} sm={10} md={8}>
+          <Grid item xs={false} sm={1} md={2} />
+          <Grid item xs={12} sm={10} md={8}>
             <Box
               sx={{
                 mt: 8,
@@ -89,7 +90,6 @@ const Home = () => {
               </Container>
             </Box>
           </Grid>
-          <Grid item xs={1} sm={1} md={2} />
         </>
       )}
 
@@ -112,15 +112,19 @@ const Home = () => {
                   {book.title}
                 </Typography>
                 <Typography variant="subtitle1">{book.detail}</Typography>
-                <Typography variant="caption">URL:{book.url}</Typography>
+                <Typography variant="subtitle2">
+                  URL:
+                  <MUILink href={book.url} target="_blank" rel="noopener">
+                    {book.url}
+                  </MUILink>
+                </Typography>
                 <Divider />
-                <Typography variant="body1" sx={{ pt: 2 }}>
+                <Typography variant="body2" sx={{ pt: 2 }}>
                   {book.review}
                 </Typography>
                 <Typography align="right" variant="body2">
                   投稿者:{book.reviewer}
                 </Typography>
-
                 {auth ? (
                   <CardActions>
                     <Button
