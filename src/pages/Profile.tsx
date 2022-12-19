@@ -1,5 +1,9 @@
 import * as React from "react";
-import { AccountCircle, Close as CloseIcon } from "@mui/icons-material";
+import {
+  AccountCircle,
+  Close as CloseIcon,
+  PhotoCamera,
+} from "@mui/icons-material";
 import {
   Alert,
   Avatar,
@@ -23,12 +27,24 @@ const Profile = () => {
   const [isError, setIsError] = React.useState<boolean>(false);
   const [loginUserInfo, setLoginUserInfo] = React.useState<null | User>(null);
   const [cookies] = useCookies();
+  const [iconImage, setIconImage] = React.useState<undefined | string>(
+    undefined
+  );
+  const [fileImage, setFileImage] = React.useState<File | null>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    if (formData.get("currentName") !== formData.get("newName")) {
+      putUserInfo(formData);
+    }
+
+    if (fileImage !== null) postUploads();
+  };
+
+  const putUserInfo = (formData: FormData) => {
     const data = {
-      name: formData.get("name"),
+      name: formData.get("newName"),
     };
     const options = {
       headers: {
@@ -50,6 +66,27 @@ const Profile = () => {
       });
   };
 
+  const postUploads = () => {
+    if (fileImage === null) return;
+    const formData = new FormData();
+    formData.append("icon", fileImage);
+
+    const options = {
+      headers: {
+        authorization: `Bearer ${cookies.token}`,
+      },
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/uploads`, formData, options)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   React.useEffect(() => {
     const options = {
       headers: {
@@ -68,6 +105,13 @@ const Profile = () => {
         setIsError(true);
       });
   }, []);
+
+  const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const fileObject = e.target.files[0];
+    setIconImage(window.URL.createObjectURL(fileObject));
+    setFileImage(fileObject);
+  };
 
   return (
     <Grid container component="main" maxWidth="xs">
@@ -93,19 +137,51 @@ const Profile = () => {
                 component="form"
                 noValidate
                 onSubmit={handleSubmit}
-                sx={{ mt: 3 }}
+                sx={{ mt: 3, width: "100%", "text-align": "center" }}
               >
+                <IconButton
+                  color="primary"
+                  aria-label="upload picture"
+                  component="label"
+                >
+                  <input
+                    hidden
+                    accept="image/*"
+                    type="file"
+                    name="icon"
+                    id="icon"
+                    onChange={onFileInputChange}
+                  />
+                  {loginUserInfo.iconUrl !== undefined ||
+                  iconImage !== undefined ? (
+                    <Avatar
+                      src={iconImage ? iconImage : loginUserInfo.iconUrl}
+                      sx={{ width: 200, height: 200 }}
+                    />
+                  ) : (
+                    <Avatar sx={{ width: 200, height: 200 }}>
+                      <PhotoCamera sx={{ width: 180, height: 180 }} />
+                    </Avatar>
+                  )}
+                </IconButton>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextField
                       autoComplete="user-name"
-                      name="name"
+                      name="newName"
                       required
                       fullWidth
-                      id="name"
+                      id="newName"
                       label="名前"
                       autoFocus
                       defaultValue={loginUserInfo.name}
+                    />
+                    <input
+                      hidden
+                      name="currentName"
+                      id="currentId"
+                      value={loginUserInfo.name}
+                      readOnly
                     />
                   </Grid>
                 </Grid>
