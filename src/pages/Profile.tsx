@@ -23,9 +23,15 @@ import { useCookies } from "react-cookie";
 import { compressImage } from "../common/compress";
 
 const Profile = () => {
-  const [message, setMessage] = React.useState<string>();
-  const [messageOpen, setMessageOpen] = React.useState<boolean>(false);
-  const [isError, setIsError] = React.useState<boolean>(false);
+  const [putUserMessage, setPutUserMessage] = React.useState<string>();
+  const [putUserMessageOpen, setPutUserMessageOpen] =
+    React.useState<boolean>(false);
+  const [isPutUserError, setIsPutUserError] = React.useState<boolean>(false);
+  const [postIconsMessage, setPostIconsMessage] = React.useState<string>();
+  const [postIconsMessageOpen, setPostIconsMessageOpen] =
+    React.useState<boolean>(false);
+  const [isPostIconsError, setIsPostIconsError] =
+    React.useState<boolean>(false);
   const [loginUserInfo, setLoginUserInfo] = React.useState<null | User>(null);
   const [cookies] = useCookies();
   const [iconImage, setIconImage] = React.useState<undefined | string>(
@@ -56,14 +62,14 @@ const Profile = () => {
     axios
       .put(`${process.env.REACT_APP_API_URL}/users`, data, options)
       .then(() => {
-        setMessage(`ユーザー情報の更新に成功しました。`);
-        setMessageOpen(true);
-        setIsError(false);
+        setPutUserMessage(`ユーザー情報の更新に成功しました。`);
+        setPutUserMessageOpen(true);
+        setIsPutUserError(false);
       })
       .catch((err) => {
-        setMessage(`ユーザー情報の更新に失敗しました。 ${err}`);
-        setMessageOpen(true);
-        setIsError(true);
+        setPutUserMessage(`ユーザー情報の更新に失敗しました。 ${err}`);
+        setPutUserMessageOpen(true);
+        setIsPutUserError(true);
       });
   };
 
@@ -71,8 +77,15 @@ const Profile = () => {
     if (fileImage === null) return;
 
     const formData = new FormData();
-    const compressedFile = await compressImage(fileImage);
-    formData.append("icon", compressedFile);
+    try {
+      const compressedFile = await compressImage(fileImage);
+      formData.append("icon", compressedFile);
+    } catch (err) {
+      setPostIconsMessage(`アイコンの更新に失敗しました。 ${err}`);
+      setPostIconsMessageOpen(true);
+      setIsPostIconsError(true);
+      return;
+    }
 
     const options = {
       headers: {
@@ -82,11 +95,16 @@ const Profile = () => {
 
     axios
       .post(`${process.env.REACT_APP_API_URL}/uploads`, formData, options)
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
+        setPostIconsMessage(`アイコンの更新に成功しました。`);
+        setPostIconsMessageOpen(true);
+        setIsPostIconsError(false);
+        setFileImage(null);
       })
       .catch((err) => {
-        console.log(err);
+        setPostIconsMessage(`アイコンの更新に失敗しました。 ${err}`);
+        setPostIconsMessageOpen(true);
+        setIsPostIconsError(true);
       });
   };
 
@@ -103,9 +121,9 @@ const Profile = () => {
         setLoginUserInfo(res.data);
       })
       .catch((err) => {
-        setMessage(`ユーザー情報の取得に失敗しました。 ${err}`);
-        setMessageOpen(true);
-        setIsError(true);
+        setPutUserMessage(`ユーザー情報の取得に失敗しました。 ${err}`);
+        setPutUserMessageOpen(true);
+        setIsPutUserError(true);
       });
   }, []);
 
@@ -198,16 +216,16 @@ const Profile = () => {
                   更新
                 </Button>
 
-                <Collapse in={messageOpen}>
+                <Collapse in={putUserMessageOpen}>
                   <Alert
-                    severity={isError ? "error" : "success"}
+                    severity={isPutUserError ? "error" : "success"}
                     action={
                       <IconButton
                         aria-label="close"
                         color="inherit"
                         size="small"
                         onClick={() => {
-                          setMessageOpen(false);
+                          setPutUserMessageOpen(false);
                         }}
                       >
                         <CloseIcon fontSize="inherit" />
@@ -215,7 +233,28 @@ const Profile = () => {
                     }
                     sx={{ mb: 2 }}
                   >
-                    {message}
+                    {putUserMessage}
+                  </Alert>
+                </Collapse>
+
+                <Collapse in={postIconsMessageOpen}>
+                  <Alert
+                    severity={isPostIconsError ? "error" : "success"}
+                    action={
+                      <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        size="small"
+                        onClick={() => {
+                          setPostIconsMessageOpen(false);
+                        }}
+                      >
+                        <CloseIcon fontSize="inherit" />
+                      </IconButton>
+                    }
+                    sx={{ mb: 2 }}
+                  >
+                    {postIconsMessage}
                   </Alert>
                 </Collapse>
               </Box>
