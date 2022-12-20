@@ -20,6 +20,7 @@ import Footer from "../components/Footer";
 import { User } from "../common/user.type";
 import axios from "axios";
 import { useCookies } from "react-cookie";
+import { compressImage } from "../common/compress";
 
 const Profile = () => {
   const [message, setMessage] = React.useState<string>();
@@ -66,10 +67,12 @@ const Profile = () => {
       });
   };
 
-  const postUploads = () => {
+  const postUploads = async () => {
     if (fileImage === null) return;
+
     const formData = new FormData();
-    formData.append("icon", fileImage);
+    const compressedFile = await compressImage(fileImage);
+    formData.append("icon", compressedFile);
 
     const options = {
       headers: {
@@ -137,7 +140,7 @@ const Profile = () => {
                 component="form"
                 noValidate
                 onSubmit={handleSubmit}
-                sx={{ mt: 3, width: "100%", "text-align": "center" }}
+                sx={{ mt: 3, width: "100%", textAlign: "center" }}
               >
                 <IconButton
                   color="primary"
