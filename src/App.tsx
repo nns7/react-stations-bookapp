@@ -12,9 +12,13 @@ import ReviewEdit from "./pages/ReviewEdit";
 import SignUp from "./pages/SignUp";
 import { themeOptions } from "./components/themeOptions";
 import NotFound from "./pages/NotFound";
+import { useSelector } from "react-redux";
+import { RootState } from "./common/rootState.type";
 
 const App = () => {
+  const auth = useSelector((state: RootState) => state.auth.isSignIn);
   const theme = createTheme(themeOptions);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -24,10 +28,16 @@ const App = () => {
           <Route path={`/`} element={<Home />} />
           <Route path={`/signup`} element={<SignUp />} />
           <Route path={`/login`} element={<Login />} />
-          <Route path={`/profile`} element={<Profile />} />
-          <Route path={`/new`} element={<ReviewAdd />} />
-          <Route path={`/detail/:id`} element={<ReviewDetail />} />
-          <Route path={`/edit/:id`} element={<ReviewEdit />} />
+          {auth ? (
+            <>
+              <Route path={`/profile`} element={<Profile />} />
+              <Route path={`/new`} element={<ReviewAdd />} />
+              <Route path={`/detail/:id`} element={<ReviewDetail />} />
+              <Route path={`/edit/:id`} element={<ReviewEdit />} />
+            </>
+          ) : (
+            <></>
+          )}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

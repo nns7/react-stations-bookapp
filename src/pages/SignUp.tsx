@@ -18,11 +18,12 @@ import title from "../image/title.png";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login, signIn } from "../components/authSlice";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { RootState } from "../common/rootState.type";
 
 const schema = yup.object({
   name: yup.string().required("名前が入力されていません"),
@@ -39,6 +40,7 @@ const schema = yup.object({
 type Inputs = yup.InferType<typeof schema>;
 
 const SignUp = () => {
+  const auth = useSelector((state: RootState) => state.auth.isSignIn);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = React.useState<string>();
@@ -76,6 +78,10 @@ const SignUp = () => {
       dispatch(login(res.data));
     });
   };
+
+  React.useEffect(() => {
+    if (auth) navigate("/");
+  }, []);
 
   return (
     <Grid container component="main" maxWidth="xs">

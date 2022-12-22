@@ -16,13 +16,14 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import title from "../image/title.png";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
 import { login, signIn } from "../components/authSlice";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { RootState } from "../common/rootState.type";
 
 const schema = yup.object({
   email: yup
@@ -38,6 +39,7 @@ const schema = yup.object({
 type Inputs = yup.InferType<typeof schema>;
 
 const Login = () => {
+  const auth = useSelector((state: RootState) => state.auth.isSignIn);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = React.useState<string>();
@@ -75,6 +77,10 @@ const Login = () => {
       dispatch(login(res.data));
     });
   };
+
+  React.useEffect(() => {
+    if (auth) navigate("/");
+  }, []);
 
   return (
     <Grid container component="main" maxWidth="xs">
