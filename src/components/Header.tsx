@@ -8,23 +8,31 @@ import {
   Box,
   Menu,
   MenuItem,
+  Avatar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../common/rootState.type";
-import { signOut } from "./authSlice";
+import { login, signOut } from "./authSlice";
 import { useCookies } from "react-cookie";
 import {
   AccountCircle,
   MenuBookTwoTone as MenuBookTwoToneIcon,
 } from "@mui/icons-material";
+import axios from "axios";
 
 const Header = () => {
   const auth = useSelector((state: RootState) => state.auth.isSignIn);
+  const loginUserName = useSelector(
+    (state: RootState) => state.auth.userInfo.name
+  );
+  const loginUserIconUrl = useSelector(
+    (state: RootState) => state.auth.userInfo.iconUrl
+  );
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [, , removeCookie] = useCookies();
+  const [cookies, , removeCookie] = useCookies();
 
   function onHome() {
     navigate("/");
@@ -60,6 +68,20 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  React.useEffect(() => {
+    if (!auth) return;
+
+    const options = {
+      headers: {
+        authorization: `Bearer ${cookies.token}`,
+      },
+    };
+
+    axios.get(`${process.env.REACT_APP_API_URL}/users`, options).then((res) => {
+      dispatch(login(res.data));
+    });
+  }, []);
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -70,57 +92,73 @@ const Header = () => {
           bookmail
         </Typography>
         {auth ? (
-          <Box sx={{ flexGrow: 0 }}>
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={handleMenu}
-              sx={{ p: 0 }}
-            >
-              <AccountCircle />
-            </IconButton>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              <MenuItem
-                onClick={() => {
-                  onReviewAdd();
-                  handleClose();
-                }}
+          <>
+            {loginUserName ? (
+              <Typography variant="h6" component="div">
+                {loginUserName}
+              </Typography>
+            ) : (
+              <></>
+            )}
+            <Box sx={{ flexGrow: 0 }}>
+              <IconButton
+                size="large"
+                color="inherit"
+                onClick={handleMenu}
+                sx={{ p: 0 }}
               >
-                レビュー投稿
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  onProfile();
-                  handleClose();
+                {loginUserIconUrl ? (
+                  <Avatar
+                    src={loginUserIconUrl}
+                    sx={{ width: 29.17, height: 29.17 }}
+                  />
+                ) : (
+                  <AccountCircle sx={{ width: 29.17, height: 29.17 }} />
+                )}
+              </IconButton>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
                 }}
-              >
-                プロフィール
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  onLogout();
-                  handleClose();
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
                 }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
               >
-                ログアウト
-              </MenuItem>
-            </Menu>
-          </Box>
+                <MenuItem
+                  onClick={() => {
+                    onReviewAdd();
+                    handleClose();
+                  }}
+                >
+                  レビュー投稿
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onProfile();
+                    handleClose();
+                  }}
+                >
+                  プロフィール
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onLogout();
+                    handleClose();
+                  }}
+                >
+                  ログアウト
+                </MenuItem>
+              </Menu>
+            </Box>
+          </>
         ) : (
           <>
             <Button

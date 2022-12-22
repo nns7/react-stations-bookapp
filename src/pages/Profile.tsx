@@ -9,7 +9,6 @@ import {
   Avatar,
   Box,
   Button,
-  CircularProgress,
   Collapse,
   Grid,
   IconButton,
@@ -17,10 +16,12 @@ import {
   Typography,
 } from "@mui/material";
 import Footer from "../components/Footer";
-import { User } from "../common/user.type";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import { compressImage } from "../common/compress";
+import { RootState } from "../common/rootState.type";
+import { useDispatch, useSelector } from "react-redux";
+import { changeName, uploadIcon } from "../components/authSlice";
 
 const Profile = () => {
   const [putUserMessage, setPutUserMessage] = React.useState<string>();
@@ -32,12 +33,18 @@ const Profile = () => {
     React.useState<boolean>(false);
   const [isPostIconsError, setIsPostIconsError] =
     React.useState<boolean>(false);
-  const [loginUserInfo, setLoginUserInfo] = React.useState<null | User>(null);
   const [cookies] = useCookies();
   const [iconImage, setIconImage] = React.useState<undefined | string>(
     undefined
   );
   const [fileImage, setFileImage] = React.useState<File | null>(null);
+  const loginUserName = useSelector(
+    (state: RootState) => state.auth.userInfo.name
+  );
+  const loginUserIconUrl = useSelector(
+    (state: RootState) => state.auth.userInfo.iconUrl
+  );
+  const dispatch = useDispatch();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,10 +68,12 @@ const Profile = () => {
 
     axios
       .put(`${process.env.REACT_APP_API_URL}/users`, data, options)
-      .then(() => {
+      .then((res) => {
         setPutUserMessage(`ユーザー情報の更新に成功しました。`);
         setPutUserMessageOpen(true);
         setIsPutUserError(false);
+        // storeに保持しているユーザー名を更新
+        dispatch(changeName(res.data.name));
       })
       .catch((err) => {
         setPutUserMessage(`ユーザー情報の更新に失敗しました。 ${err}`);
@@ -95,11 +104,13 @@ const Profile = () => {
 
     axios
       .post(`${process.env.REACT_APP_API_URL}/uploads`, formData, options)
-      .then(() => {
+      .then((res) => {
         setPostIconsMessage(`アイコンの更新に成功しました。`);
         setPostIconsMessageOpen(true);
         setIsPostIconsError(false);
         setFileImage(null);
+        // storeに保持しているアイコンURLを更新
+        dispatch(uploadIcon(res.data.iconUrl));
       })
       .catch((err) => {
         setPostIconsMessage(`アイコンの更新に失敗しました。 ${err}`);
@@ -107,25 +118,6 @@ const Profile = () => {
         setIsPostIconsError(true);
       });
   };
-
-  React.useEffect(() => {
-    const options = {
-      headers: {
-        authorization: `Bearer ${cookies.token}`,
-      },
-    };
-
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/users`, options)
-      .then((res) => {
-        setLoginUserInfo(res.data);
-      })
-      .catch((err) => {
-        setPutUserMessage(`ユーザー情報の取得に失敗しました。 ${err}`);
-        setPutUserMessageOpen(true);
-        setIsPutUserError(true);
-      });
-  }, []);
 
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -146,47 +138,46 @@ const Profile = () => {
             alignItems: "center",
           }}
         >
-          {loginUserInfo ? (
-            <>
-              <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-                <AccountCircle />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                ユーザー情報編集
-              </Typography>
-              <Box
-                component="form"
-                noValidate
-                onSubmit={handleSubmit}
-                sx={{ mt: 3, width: "100%", textAlign: "center" }}
-              >
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="label"
-                >
-                  <input
-                    hidden
-                    accept="image/*"
-                    type="file"
-                    name="icon"
-                    id="icon"
-                    onChange={onFileInputChange}
-                  />
-                  {loginUserInfo.iconUrl !== undefined ||
-                  iconImage !== undefined ? (
-                    <Avatar
-                      src={iconImage ? iconImage : loginUserInfo.iconUrl}
-                      sx={{ width: 200, height: 200 }}
-                    />
-                  ) : (
-                    <Avatar sx={{ width: 200, height: 200 }}>
-                      <PhotoCamera sx={{ width: 180, height: 180 }} />
-                    </Avatar>
-                  )}
-                </IconButton>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <AccountCircle />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            ユーザー情報編集
+          </Typography>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3, width: "100%", textAlign: "center" }}
+          >
+            <IconButton
+              color="primary"
+              aria-label="upload picture"
+              component="label"
+            >
+              <input
+                hidden
+                accept="image/*"
+                type="file"
+                name="icon"
+                id="icon"
+                onChange={onFileInputChange}
+              />
+              {loginUserIconUrl !== undefined || iconImage !== undefined ? (
+                <Avatar
+                  src={iconImage ? iconImage : loginUserIconUrl}
+                  sx={{ width: 200, height: 200 }}
+                />
+              ) : (
+                <Avatar sx={{ width: 200, height: 200 }}>
+                  <PhotoCamera sx={{ width: 180, height: 180 }} />
+                </Avatar>
+              )}
+            </IconButton>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                {loginUserName ? (
+                  <>
                     <TextField
                       autoComplete="user-name"
                       name="newName"
@@ -195,73 +186,73 @@ const Profile = () => {
                       id="newName"
                       label="名前"
                       autoFocus
-                      defaultValue={loginUserInfo.name}
+                      defaultValue={loginUserName}
                     />
                     <input
                       hidden
                       name="currentName"
-                      id="currentId"
-                      value={loginUserInfo.name}
+                      id="currentName"
+                      value={loginUserName}
                       readOnly
                     />
-                  </Grid>
-                </Grid>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  color="warning"
-                  fullWidth
-                >
-                  更新
-                </Button>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Grid>
+            </Grid>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              color="warning"
+              fullWidth
+            >
+              更新
+            </Button>
 
-                <Collapse in={putUserMessageOpen}>
-                  <Alert
-                    severity={isPutUserError ? "error" : "success"}
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setPutUserMessageOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                    sx={{ mb: 2 }}
+            <Collapse in={putUserMessageOpen}>
+              <Alert
+                severity={isPutUserError ? "error" : "success"}
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setPutUserMessageOpen(false);
+                    }}
                   >
-                    {putUserMessage}
-                  </Alert>
-                </Collapse>
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+                sx={{ mb: 2 }}
+              >
+                {putUserMessage}
+              </Alert>
+            </Collapse>
 
-                <Collapse in={postIconsMessageOpen}>
-                  <Alert
-                    severity={isPostIconsError ? "error" : "success"}
-                    action={
-                      <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                          setPostIconsMessageOpen(false);
-                        }}
-                      >
-                        <CloseIcon fontSize="inherit" />
-                      </IconButton>
-                    }
-                    sx={{ mb: 2 }}
+            <Collapse in={postIconsMessageOpen}>
+              <Alert
+                severity={isPostIconsError ? "error" : "success"}
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setPostIconsMessageOpen(false);
+                    }}
                   >
-                    {postIconsMessage}
-                  </Alert>
-                </Collapse>
-              </Box>
-            </>
-          ) : (
-            <CircularProgress />
-          )}
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+                sx={{ mb: 2 }}
+              >
+                {postIconsMessage}
+              </Alert>
+            </Collapse>
+          </Box>
         </Box>
       </Grid>
 

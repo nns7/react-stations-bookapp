@@ -19,7 +19,7 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
 import { useDispatch } from "react-redux";
-import { signIn } from "../components/authSlice";
+import { login, signIn } from "../components/authSlice";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -56,11 +56,25 @@ const SignUp = () => {
         dispatch(signIn());
         setCookie("token", token);
         navigate("/");
+        // storeにログインユーザー情報を保持
+        getUser(token);
       })
       .catch((err) => {
         setErrorMessage(`ユーザー作成に失敗しました。 ${err}`);
         setErrorOpen(true);
       });
+  };
+
+  const getUser = (token: string) => {
+    const options = {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    };
+
+    axios.get(`${process.env.REACT_APP_API_URL}/users`, options).then((res) => {
+      dispatch(login(res.data));
+    });
   };
 
   return (
