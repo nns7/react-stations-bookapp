@@ -23,6 +23,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import CloseIcon from "@mui/icons-material/Close";
 import { Book } from "../common/book.type";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+
+const schema = yup.object({
+  title: yup.string().required("タイトルが入力されていません"),
+  url: yup
+    .string()
+    .url("URL形式ではありません")
+    .required("URLが入力されていません"),
+  detail: yup.string().required("書籍詳細が入力されていません"),
+  review: yup.string().required("レビューが入力されていません"),
+});
+
+type Inputs = yup.InferType<typeof schema>;
 
 const ReviewEdit = () => {
   const navigate = useNavigate();
@@ -32,16 +47,12 @@ const ReviewEdit = () => {
   const [cookies] = useCookies();
   const [book, setBook] = React.useState<null | Book>(null);
   const { id } = useParams();
+  const { control, handleSubmit, reset } = useForm<Inputs>({
+    resolver: yupResolver(schema),
+    defaultValues: {},
+  });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = {
-      title: formData.get("title"),
-      url: formData.get("url"),
-      detail: formData.get("detail"),
-      review: formData.get("review"),
-    };
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
     const options = {
       headers: {
         authorization: `Bearer ${cookies.token}`,
@@ -75,6 +86,15 @@ const ReviewEdit = () => {
         setErrorMessage(`書籍情報の取得に失敗しました。 ${err}`);
       });
   }, []);
+
+  React.useEffect(() => {
+    reset({
+      title: book?.title,
+      url: book?.url,
+      detail: book?.detail,
+      review: book?.review,
+    });
+  }, [reset, book]);
 
   function onDelete() {
     const options = {
@@ -125,56 +145,88 @@ const ReviewEdit = () => {
               <Box
                 component="form"
                 noValidate
-                onSubmit={handleSubmit}
+                onSubmit={handleSubmit(onSubmit)}
                 sx={{ mt: 3 }}
               >
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <TextField
-                      autoComplete="book-title"
+                    <Controller
                       name="title"
-                      required
-                      fullWidth
-                      id="title"
-                      label="書籍名"
-                      autoFocus
+                      control={control}
                       defaultValue={book.title}
+                      render={({ field, fieldState }) => (
+                        <TextField
+                          {...field}
+                          autoComplete="book-title"
+                          required
+                          fullWidth
+                          label="書籍名"
+                          error={fieldState.invalid}
+                          helperText={fieldState.error?.message}
+                          autoFocus
+                          defaultValue={book.title}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      id="url"
-                      label="書籍URL"
+                    <Controller
                       name="url"
-                      autoComplete="book-url"
+                      control={control}
                       defaultValue={book.url}
+                      render={({ field, fieldState }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          label="書籍URL"
+                          error={fieldState.invalid}
+                          helperText={fieldState.error?.message}
+                          autoComplete="book-url"
+                          defaultValue={book.url}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      id="detail"
-                      label="書籍詳細"
+                    <Controller
                       name="detail"
-                      autoComplete="book-detail"
-                      multiline
+                      control={control}
                       defaultValue={book.detail}
+                      render={({ field, fieldState }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          label="書籍詳細"
+                          error={fieldState.invalid}
+                          helperText={fieldState.error?.message}
+                          autoComplete="book-detail"
+                          multiline
+                          defaultValue={book.detail}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
+                    <Controller
                       name="review"
-                      label="レビュー"
-                      id="review"
-                      autoComplete="book-review"
-                      multiline
-                      rows={4}
+                      control={control}
                       defaultValue={book.review}
+                      render={({ field, fieldState }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          label="レビュー"
+                          error={fieldState.invalid}
+                          helperText={fieldState.error?.message}
+                          autoComplete="book-review"
+                          multiline
+                          rows={4}
+                          defaultValue={book.review}
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>

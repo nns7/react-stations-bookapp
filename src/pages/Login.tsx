@@ -20,6 +20,22 @@ import { useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
 import { signIn } from "../components/authSlice";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+
+const schema = yup.object({
+  email: yup
+    .string()
+    .email("メールアドレス形式ではありません")
+    .required("メールアドレスが入力されていません"),
+  password: yup
+    .string()
+    .required("パスワードが入力されていません")
+    .min(4, "4文字以上ではありません"),
+});
+
+type Inputs = yup.InferType<typeof schema>;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,15 +43,11 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = React.useState<string>();
   const [, setCookie] = useCookies();
   const [errorOpen, setErrorOpen] = React.useState<boolean>(false);
+  const { control, handleSubmit } = useForm<Inputs>({
+    resolver: yupResolver(schema),
+  });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-    };
-
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
     axios
       .post(`${process.env.REACT_APP_API_URL}/signin`, data)
       .then((res) => {
@@ -85,30 +97,46 @@ const Login = () => {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="メールアドレス"
+                <Controller
                   name="email"
-                  autoComplete="email"
-                  autoFocus
+                  control={control}
+                  defaultValue=""
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      label="メールアドレス"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                      autoComplete="email"
+                      autoFocus
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
+                <Controller
                   name="password"
-                  label="パスワード"
-                  type="password"
-                  id="password"
-                  autoComplete="password"
+                  control={control}
+                  defaultValue=""
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      label="パスワード"
+                      type="password"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                      autoComplete="password"
+                    />
+                  )}
                 />
               </Grid>
             </Grid>

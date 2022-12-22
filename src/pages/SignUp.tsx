@@ -3,8 +3,6 @@ import {
   Avatar,
   Button,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Grid,
   Box,
   Typography,
@@ -22,6 +20,23 @@ import { useCookies } from "react-cookie";
 import Footer from "../components/Footer";
 import { useDispatch } from "react-redux";
 import { signIn } from "../components/authSlice";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+
+const schema = yup.object({
+  name: yup.string().required("名前が入力されていません"),
+  email: yup
+    .string()
+    .email("メールアドレス形式ではありません")
+    .required("メールアドレスが入力されていません"),
+  password: yup
+    .string()
+    .required("パスワードが入力されていません")
+    .min(4, "4文字以上ではありません"),
+});
+
+type Inputs = yup.InferType<typeof schema>;
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -29,16 +44,11 @@ const SignUp = () => {
   const [errorMessage, setErrorMessage] = React.useState<string>();
   const [, setCookie] = useCookies();
   const [errorOpen, setErrorOpen] = React.useState<boolean>(false);
+  const { control, handleSubmit } = useForm<Inputs>({
+    resolver: yupResolver(schema),
+  });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = {
-      name: formData.get("lastName") + " " + formData.get("firstName"),
-      email: formData.get("email"),
-      password: formData.get("password"),
-    };
-
+  const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
     axios
       .post(`${process.env.REACT_APP_API_URL}/users`, data)
       .then((res) => {
@@ -88,58 +98,64 @@ const SignUp = () => {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="姓"
-                  name="lastName"
-                  autoComplete="family-name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="名"
+              <Grid item xs={12}>
+                <Controller
+                  name="name"
+                  control={control}
+                  defaultValue=""
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      label="名前"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                      autoComplete="given-name"
+                      autoFocus
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="メールアドレス"
+                <Controller
                   name="email"
-                  autoComplete="email"
+                  control={control}
+                  defaultValue=""
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      label="メールアドレス"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                      autoComplete="email"
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
+                <Controller
                   name="password"
-                  label="パスワード"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="新規会員登録する場合は、プライバシーポリシーおよび利用規約に同意するものとします。"
+                  control={control}
+                  defaultValue=""
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      label="パスワード"
+                      type="password"
+                      error={fieldState.invalid}
+                      helperText={fieldState.error?.message}
+                      autoComplete="new-password"
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
