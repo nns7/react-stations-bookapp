@@ -35,7 +35,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext src/",
-    "format": "eslint --cache --fix src/ && prettier --write src/"
+    "format": "eslint --cache --fix src/ && prettier --write src/",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
   },
   "eslintConfig": {
     "extends": [
