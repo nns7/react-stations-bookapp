@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/react-stations-bookapp/static/css/main.e6c13ad2.css",
-    "main.js": "/react-stations-bookapp/static/js/main.aa750c6a.js",
+    "main.js": "/react-stations-bookapp/static/js/main.6c4ff661.js",
     "static/js/787.598b242c.chunk.js": "/react-stations-bookapp/static/js/787.598b242c.chunk.js",
     "static/media/title.png": "/react-stations-bookapp/static/media/title.43bd36f1b389769c215d.png",
     "index.html": "/react-stations-bookapp/index.html",
     "main.e6c13ad2.css.map": "/react-stations-bookapp/static/css/main.e6c13ad2.css.map",
-    "main.aa750c6a.js.map": "/react-stations-bookapp/static/js/main.aa750c6a.js.map",
+    "main.6c4ff661.js.map": "/react-stations-bookapp/static/js/main.6c4ff661.js.map",
     "787.598b242c.chunk.js.map": "/react-stations-bookapp/static/js/787.598b242c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.aa750c6a.js"
+    "static/js/main.6c4ff661.js"
   ]
 }
