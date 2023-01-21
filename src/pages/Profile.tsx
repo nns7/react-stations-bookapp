@@ -22,6 +22,7 @@ import { compressImage } from "../common/compress";
 import { RootState } from "../common/rootState.type";
 import { useDispatch, useSelector } from "react-redux";
 import { changeName, uploadIcon } from "../components/authSlice";
+import { appConfig } from "../common/config";
 
 const Profile = () => {
   const [putUserMessage, setPutUserMessage] = React.useState<string>();
@@ -67,7 +68,7 @@ const Profile = () => {
     };
 
     axios
-      .put(`${process.env.REACT_APP_API_URL}/users`, data, options)
+      .put(`${appConfig.app.apiUrl}/users`, data, options)
       .then((res) => {
         setPutUserMessage(`ユーザー情報の更新に成功しました。`);
         setPutUserMessageOpen(true);
@@ -103,7 +104,7 @@ const Profile = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/uploads`, formData, options)
+      .post(`${appConfig.app.apiUrl}/uploads`, formData, options)
       .then((res) => {
         setPostIconsMessage(`アイコンの更新に成功しました。`);
         setPostIconsMessageOpen(true);

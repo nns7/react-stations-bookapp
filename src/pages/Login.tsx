@@ -24,6 +24,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { RootState } from "../common/rootState.type";
+import { appConfig } from "../common/config";
 
 const schema = yup.object({
   email: yup
@@ -51,12 +52,12 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
     axios
-      .post(`${process.env.REACT_APP_API_URL}/signin`, data)
+      .post(`${appConfig.app.apiUrl}/signin`, data)
       .then((res) => {
         const token: string = res.data.token;
         dispatch(signIn());
         setCookie("token", token);
-        navigate("/");
+        navigate(`${appConfig.app.baseUrl}/`);
         // storeにログインユーザー情報を保持
         getUser(token);
       })
@@ -73,13 +74,13 @@ const Login = () => {
       },
     };
 
-    axios.get(`${process.env.REACT_APP_API_URL}/users`, options).then((res) => {
+    axios.get(`${appConfig.app.apiUrl}/users`, options).then((res) => {
       dispatch(login(res.data));
     });
   };
 
   React.useEffect(() => {
-    if (auth) navigate("/");
+    if (auth) navigate(`${appConfig.app.baseUrl}/`);
   }, []);
 
   return (

@@ -26,6 +26,7 @@ import { Book } from "../common/book.type";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { appConfig } from "../common/config";
 
 const schema = yup.object({
   title: yup.string().required("タイトルが入力されていません"),
@@ -60,9 +61,9 @@ const ReviewEdit = () => {
     };
 
     axios
-      .put(`${process.env.REACT_APP_API_URL}/books/${id}`, data, options)
+      .put(`${appConfig.app.apiUrl}/books/${id}`, data, options)
       .then(() => {
-        navigate("/");
+        navigate(`${appConfig.app.baseUrl}/`);
       })
       .catch((err) => {
         setErrorMessage(`書籍レビューの更新に失敗しました。 ${err}`);
@@ -78,7 +79,7 @@ const ReviewEdit = () => {
     };
 
     axios
-      .get(`${process.env.REACT_APP_API_URL}/books/${id}`, options)
+      .get(`${appConfig.app.apiUrl}/books/${id}`, options)
       .then((res) => {
         setBook(res.data);
       })
@@ -104,9 +105,9 @@ const ReviewEdit = () => {
     };
 
     axios
-      .delete(`${process.env.REACT_APP_API_URL}/books/${id}`, options)
+      .delete(`${appConfig.app.apiUrl}/books/${id}`, options)
       .then(() => {
-        navigate("/");
+        navigate(`${appConfig.app.baseUrl}/`);
       })
       .catch((err) => {
         setErrorMessage(`書籍レビューの削除に失敗しました。 ${err}`);

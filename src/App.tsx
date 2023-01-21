@@ -14,6 +14,7 @@ import { themeOptions } from "./components/themeOptions";
 import NotFound from "./pages/NotFound";
 import { useSelector } from "react-redux";
 import { RootState } from "./common/rootState.type";
+import { appConfig } from "./common/config";
 
 const App = () => {
   const auth = useSelector((state: RootState) => state.auth.isSignIn);
@@ -25,15 +26,30 @@ const App = () => {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route path={`/`} element={<Home />} />
-          <Route path={`/signup`} element={<SignUp />} />
-          <Route path={`/login`} element={<Login />} />
+          <Route path={`${appConfig.app.baseUrl}/`} element={<Home />} />
+          <Route
+            path={`${appConfig.app.baseUrl}/signup`}
+            element={<SignUp />}
+          />
+          <Route path={`${appConfig.app.baseUrl}/login`} element={<Login />} />
           {auth ? (
             <>
-              <Route path={`/profile`} element={<Profile />} />
-              <Route path={`/new`} element={<ReviewAdd />} />
-              <Route path={`/detail/:id`} element={<ReviewDetail />} />
-              <Route path={`/edit/:id`} element={<ReviewEdit />} />
+              <Route
+                path={`${appConfig.app.baseUrl}/profile`}
+                element={<Profile />}
+              />
+              <Route
+                path={`${appConfig.app.baseUrl}/new`}
+                element={<ReviewAdd />}
+              />
+              <Route
+                path={`${appConfig.app.baseUrl}/detail/:id`}
+                element={<ReviewDetail />}
+              />
+              <Route
+                path={`${appConfig.app.baseUrl}/edit/:id`}
+                element={<ReviewEdit />}
+              />
             </>
           ) : (
             <></>

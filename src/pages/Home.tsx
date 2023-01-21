@@ -16,6 +16,7 @@ import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Book } from "../common/book.type";
+import { appConfig } from "../common/config";
 import { RootState } from "../common/rootState.type";
 import Footer from "../components/Footer";
 import Pagination from "../components/Pagination";
@@ -29,8 +30,8 @@ const Home = () => {
 
   React.useEffect(() => {
     const url = auth
-      ? `${process.env.REACT_APP_API_URL}/books`
-      : `${process.env.REACT_APP_API_URL}/public/books`;
+      ? `${appConfig.app.apiUrl}/books`
+      : `${appConfig.app.apiUrl}/public/books`;
     const options = {
       headers: {
         authorization: `Bearer ${cookies.token}`,
@@ -61,7 +62,7 @@ const Home = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/logs`, data, options)
+      .post(`${appConfig.app.apiUrl}/logs`, data, options)
       .then(() => {
         console.log(data);
       })

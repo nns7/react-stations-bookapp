@@ -19,6 +19,7 @@ import { useCookies } from "react-cookie";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { appConfig } from "../common/config";
 
 const schema = yup.object({
   title: yup.string().required("タイトルが入力されていません"),
@@ -49,9 +50,9 @@ const ReviewAdd = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/books`, data, options)
+      .post(`${appConfig.app.apiUrl}/books`, data, options)
       .then(() => {
-        navigate("/");
+        navigate(`${appConfig.app.baseUrl}/`);
       })
       .catch((err) => {
         setErrorMessage(`書籍レビューの投稿に失敗しました。 ${err}`);

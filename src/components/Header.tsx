@@ -20,6 +20,7 @@ import {
   MenuBookTwoTone as MenuBookTwoToneIcon,
 } from "@mui/icons-material";
 import axios from "axios";
+import { appConfig } from "../common/config";
 
 const Header = () => {
   const auth = useSelector((state: RootState) => state.auth.isSignIn);
@@ -35,29 +36,29 @@ const Header = () => {
   const [cookies, , removeCookie] = useCookies();
 
   function onHome() {
-    navigate("/");
+    navigate(`${appConfig.app.baseUrl}/`);
   }
 
   function onSignUp() {
-    navigate("/signup");
+    navigate(`${appConfig.app.baseUrl}/signup`);
   }
 
   function onLogin() {
-    navigate("/login");
+    navigate(`${appConfig.app.baseUrl}/login`);
   }
 
   function onProfile() {
-    navigate("/profile");
+    navigate(`${appConfig.app.baseUrl}/profile`);
   }
 
   function onLogout() {
     dispatch(signOut());
     removeCookie("token");
-    navigate("/login");
+    navigate(`${appConfig.app.baseUrl}/login`);
   }
 
   function onReviewAdd() {
-    navigate("/new");
+    navigate(`${appConfig.app.baseUrl}/new`);
   }
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -77,7 +78,7 @@ const Header = () => {
       },
     };
 
-    axios.get(`${process.env.REACT_APP_API_URL}/users`, options).then((res) => {
+    axios.get(`${appConfig.app.apiUrl}/users`, options).then((res) => {
       dispatch(login(res.data));
     });
   }, []);

@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import { Book } from "../common/book.type";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import { appConfig } from "../common/config";
 
 const ReviewDetail = () => {
   const [errorMessage, setErrorMessage] = React.useState<string>();
@@ -33,7 +34,7 @@ const ReviewDetail = () => {
     };
 
     axios
-      .get(`${process.env.REACT_APP_API_URL}/books/${id}`, options)
+      .get(`${appConfig.app.apiUrl}/books/${id}`, options)
       .then((res) => {
         setBook(res.data);
       })

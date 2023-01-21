@@ -31,13 +31,14 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "cross-env PUBLIC_URL=/react-stations-bookapp react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject",
     "lint": "eslint --ext src/",
     "format": "eslint --cache --fix src/ && prettier --write src/",
     "cy:open": "cypress open",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run",
+    "deploy": "npm run build && gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
